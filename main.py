@@ -9,6 +9,7 @@ from llm import (
     run_rag_query,
     run_graphrag_query,
     run_natural_language_query,
+    run_graphrag_answer_question,
     determine_question_type,
     get_vulnerability_list,
     QUERY_TYPES,
@@ -48,7 +49,7 @@ def get_query_type_text(type: QUERY_TYPES):
             return "Graph + Similarity Query"
 
 
-def run_query(prompt):
+def run_query(prompt, usegraph=False):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     with tab1:
@@ -60,17 +61,18 @@ def run_query(prompt):
 
         with st.spinner(f"Executing using {get_query_type_text(type)}..."):
             with st.chat_message("assistant"):
-                match type:
-                    case QUERY_TYPES.KnowledgeGraph:
-                        response = run_natural_language_query(prompt)
-                    case QUERY_TYPES.RAG:
-                        response = run_rag_query(prompt)
-                    case QUERY_TYPES.GraphRAG:
-                        response = run_graphrag_query(prompt)
-                    case _:
-                        response = (
-                            "I am not sure how to execute that query, please try again."
-                        )
+                if usegraph:
+                    response = run_graphrag_answer_question(prompt)
+                else:
+                    match type:
+                        case QUERY_TYPES.KnowledgeGraph:
+                            response = run_natural_language_query(prompt)
+                        case QUERY_TYPES.RAG:
+                            response = run_rag_query(prompt)
+                        case QUERY_TYPES.GraphRAG:
+                            response = run_graphrag_query(prompt)
+                        case _:
+                            response = "I am not sure how to execute that query, please try again."
                 create_display(response)
                 st.session_state.messages.append(
                     {"role": "assistant", "content": response, "type": "table"}
@@ -136,4 +138,10 @@ with st.sidebar:
     if st.button("Show me how they are connected", key="whole_dataset"):
         run_query(
             f"What Vulnerabilities are similar to '{sim_option}' and show me how they are connected"
+        )
+
+    if st.button("Try out GraphRAG", key="graphrag"):
+        run_query(
+            "What is an SBOM and what are the top reasons why we should use them?",
+            usegraph=True,
         )

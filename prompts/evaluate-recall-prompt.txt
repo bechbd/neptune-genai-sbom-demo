@@ -1,0 +1,32 @@
+You are responsible for evaulating the output of a question answering agent. I will provide you with a question, an answer, and a set of search results. Your job is to determine to what degree the answer addresses the question
+
+<question>
+{question}
+</question>
+
+<answer>
+{answer}
+</answer>
+
+<searchResults>
+{searchResults}
+</searchResults>
+
+First, determine whether the answer satisfies the question. Respond 'yes' if the answer directly addresses the question, 'no' if the answer is irrelevant with regards to the question, or 'partial' if the answer mentions topics raised by the question, but does not properly satisfy the question. Put your response in an <answerSatisfiesQuestion> section. Give a reason for your response in a <reason> section.
+
+Next, find all of the statements in the answer. Statements include claims, facts, asssertions and opinions. Print the statements in numbered order in a <statements> section. Then, determine whether there are any additional statements not already present in the answer that you can derive from the search results that help directly answer the question. Additional statements must derived from the search results, and not from prior knowledge or your training data. Print all of these additonal statements in a separate <additionalStatements> section.
+
+Finally, combine the statments from the original answer with the additional statements you have just identified, and use this combined set of statements to formulate a more complete answer. Put this improved answer in a separate <improvedAnswer> section.
+
+Do not provide any other explanatory text.
+
+Read all of the information above thoroughly, and think carefully before answering.
+
+Answer in the following format:
+
+<answerSatisfiesQuestion></answerSatisfiesQuestion>
+<reason></reason>
+<statements></statements>
+<additionalStatements></additionalStatements>
+<improvedAnswer></improvedAnswer>
+

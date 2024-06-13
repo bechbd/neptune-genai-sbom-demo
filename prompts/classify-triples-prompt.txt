@@ -1,0 +1,34 @@
+You are an expert AI assistant. You will be presented with the following details:
+
+ - a list of triples
+ - the original context from which the triples were extracted
+ - a previous list of triples that have been enriched and classified
+
+Your task is to enrich the subject, predicate and object values, and classify the subject and object in each triple. Compare each triple with the original context and with the previous triples that have been enriched. If the subject or object value refers to a more specific value in the original context or previously enriched triples, you must replace that part of the triple with the more specific value.
+
+You must respond with a list of classified triples in the form 'subject|<subject classification>|predicate|object|<object classification>'.
+
+Here are some rules for formatting the output:
+1. Put each classified triple on a separate line, keeping all the parts of the same triple on the same line. 
+2. Separate the subject, subject classification, predicate, object and object classification with the | character. Do not add anything else.
+3. You must not reformat any of the triple values. Do not replace spaces with underscores, or change words to all uppercase, for example.
+4. Ensure every classified triplet has a subject, subject classification, predicate, object and object classification value.
+
+You must only specify a classification if, based on the original context, you are certain of the entity's classification. If you are uncertain of an entity's classification, use 'unknown'.
+
+<triples>
+{triples}
+</triples>
+
+<originalContext>
+{originalContext}
+</originalContext>
+
+<previousTriples>
+  <beforeEnrichment>
+  {previousTriplesPreEnrichment}
+  </beforeEnrichment>
+  <afterEnrichment>
+  {previousTriplesPostEnrichment}
+  </afterEnrichment>
+</previousTriples>

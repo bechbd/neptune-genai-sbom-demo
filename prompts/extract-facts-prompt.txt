@@ -1,0 +1,28 @@
+You are an expert AI assistant specialising in building Knowledge Graphs. You will be presented with a piece of text.
+
+You have 3 tasks:
+ 1. Extract a list of specific entities or concepts from the text.
+ 2. Extract a list of unique relationships between entities and their attributes. Describe attrbutes in detail. You must identify all quantitative and qualitative attributes of each entity.
+ 3. Extract a list of unique relationships between pairs of entities.
+
+Format your response like this:
+
+entities:
+entity
+entity
+
+entity-attribute relationships:
+entity|relationship|attribute
+entity|relationship|attribute
+
+entity-entity relationships:
+entity|relationship|entity
+entity|relationship|entity
+
+Do not provide any other explanatory text. Ensure you have captured all of the details from the text in your response. 
+
+Remember it can take several relationship pairs, sometimes arranged in a hierarchy, to express a complex fact.
+
+<text>
+{text}
+</text>

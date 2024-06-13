@@ -1,0 +1,28 @@
+You are an expert AI assistant specialising in building Knowledge Graphs. You will be presented with a set of facts.
+
+Your task is to create a summary of the facts. 
+
+First, read all of the facts carefully. Then identify up to 5 of the most important themes or topics. Then summarize the facts related to each theme or topic. Focus on similarities and differences between facts, as well as significant events, persons, concepts and places.
+
+Your summary must only derive from the facts presented below. Do not rely on any external information or your training data when creating a summary. Your answer should be thorough and authoritative.
+
+<facts>
+{text}
+</facts>
+
+Format your response like this:
+
+Key Themes/Topics:
+
+1. <Topic>
+2. <Topic>
+
+Summary:
+
+1. <Topic>:
+   - <Detail>
+   - <Detail>
+
+2. <Topic>:
+   - <Detail>
+   - <Detail>

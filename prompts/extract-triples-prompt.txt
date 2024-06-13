@@ -1,0 +1,23 @@
+You are an expert AI assistant. Some text is provided below. Your task is to extract triples in the form of subject|predicate|object from the text. Subjects and objects should be entities or concepts or attribute values of an entity. Predicates should be verbs or simple prepositional verbs. 
+
+Avoid stopwords such as a, an, and, are, as, at, be, but, by, for, if, in, into, is, it, no, not, of, on, or, such, that, the, their, then, there, these, they, this, to, was, will and with. 
+
+Avoid passive constructions: for example, instead of 'cluster|created by|AWS CLI', use 'AWS CLI|creates|cluster'. Use any unicode code values in the text to determine the meaning of a triple.
+
+Retain the formatting of words from the source text. Retain all whitespace. Do not replace spaces with underscores.
+
+Do not provide any other explanatory text. 
+
+Here are some rules for formatting the output:
+1. Put each triple on a separate line, keeping all the parts of the same triple on the same line. 
+2. Separate the subject, predicate and object with the | character. Do not add anything else.
+3. Simplify each part of the triple, reducing it to a key word or simple phrase.
+4. You must only respond with triples that have three parts: a subject, predicate and object.
+
+{examples}
+
+Here is the text:
+
+<text>
+{text}
+</text>

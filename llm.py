@@ -1,5 +1,9 @@
+"""
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+"""
+
 from langchain_community.graphs import NeptuneAnalyticsGraph
-from langchain.chat_models import BedrockChat
 from langchain_aws import ChatBedrock
 from langchain_core.messages import HumanMessage
 from langchain.chains import NeptuneOpenCypherQAChain
@@ -9,6 +13,23 @@ from langchain.prompts import PromptTemplate
 from enum import Enum
 import os
 import streamlit as st
+import os
+from pipe import Pipe
+from question_answering.qa_response import QAResponse
+from question_answering.user_context import UserContext
+from question_answering.qa_context import QAContext
+from question_answering.neptune_client import NeptuneClient
+from question_answering.strategies.chunks import (
+    ChunkSimilaritySearch,
+    RerankChunks,
+    GetChunks,
+)
+from question_answering.strategies.facts import (
+    NeptuneFactSimilaritySearch,
+    FactExpansion,
+)
+from question_answering.strategies.keywords import ExtractKeywords, KeywordSearch
+from question_answering.strategies.communities import GetCommunities
 
 vulnerability_list = None
 QUERY_TYPES = Enum("QUERY_TYPES", ["KnowledgeGraph", "RAG", "GraphRAG", "Unknown"])
@@ -50,9 +71,8 @@ VULNERABILITY_LIST_QUERY = """
 
 graph_id = os.getenv("GRAPH_ID")
 
-llm = BedrockChat(
+llm = ChatBedrock(
     model_id="anthropic.claude-3-sonnet-20240229-v1:0",
-    client=boto3.client("bedrock-runtime"),
     model_kwargs={"temperature": 0},
 )
 graph = NeptuneAnalyticsGraph(graph_identifier=graph_id)
@@ -160,3 +180,42 @@ def run_graph_query(query, parameters={}):
     )
     data = json.loads(resp["payload"].read().decode("UTF-8"))
     return data["results"]
+
+
+def run_graphrag_answer_question(question):
+
+    user_context = UserContext(question)
+    qa_context = QAContext(user_context)
+
+    neptune_client = NeptuneClient(os.environ["GRAPH_ID"])
+
+    keywords = ExtractKeywords(
+        os.environ["EXTRACTION_MODEL"]
+    )  # extract keywords from the NL question.
+    chunk_search = ChunkSimilaritySearch(
+        neptune_client
+    )  # top-k closest chunks for the NL question.
+    fact_search = NeptuneFactSimilaritySearch(
+        neptune_client
+    )  # top-k facts for the NL question.
+    fact_expansion = FactExpansion(
+        neptune_client, max_depth=10
+    )  # for each fact, expand the fact set in the graph.
+    keyword_search = KeywordSearch(neptune_client)
+    rerank_chunks = RerankChunks()
+    get_chunks = GetChunks(neptune_client, [RerankChunks])
+    get_communities = GetCommunities(neptune_client)
+
+    results = (
+        qa_context
+        | Pipe(keywords.accept)
+        | Pipe(keyword_search.accept)
+        | Pipe(chunk_search.accept)
+        | Pipe(fact_search.accept)
+        | Pipe(fact_expansion.accept)
+        | Pipe(rerank_chunks.accept)
+        | Pipe(get_chunks.accept)
+        | Pipe(get_communities.accept)
+    )
+
+    return QAResponse(os.environ["RESPONSE_MODEL"]).generate_response(results)
