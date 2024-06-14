@@ -1,6 +1,5 @@
 import os
 import re
-import common.bedrock_retry_utils
 from pathlib import Path
 from llama_index.core.prompts import PromptTemplate
 from llama_index.llms.bedrock import Bedrock

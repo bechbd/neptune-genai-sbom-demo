@@ -1,5 +1,4 @@
 import json
-import common.bedrock_retry_utils
 from llama_index.embeddings.bedrock import BedrockEmbedding
 
 

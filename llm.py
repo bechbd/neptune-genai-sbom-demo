@@ -9,27 +9,30 @@ from langchain_core.messages import HumanMessage
 from langchain.chains import NeptuneOpenCypherQAChain
 import boto3
 import json
-from langchain.prompts import PromptTemplate
 from enum import Enum
 import os
 import streamlit as st
 import os
 from pipe import Pipe
-from question_answering.qa_response import QAResponse
-from question_answering.user_context import UserContext
-from question_answering.qa_context import QAContext
-from question_answering.neptune_client import NeptuneClient
-from question_answering.strategies.chunks import (
+
+from neptune_graph_rag.question_answering.qa_response import QAResponse
+from neptune_graph_rag.question_answering.user_context import UserContext
+from neptune_graph_rag.question_answering.qa_context import QAContext
+from neptune_graph_rag.question_answering.neptune_client import NeptuneClient
+from neptune_graph_rag.question_answering.strategies.chunks import (
     ChunkSimilaritySearch,
     RerankChunks,
     GetChunks,
 )
-from question_answering.strategies.facts import (
+from neptune_graph_rag.question_answering.strategies.facts import (
     NeptuneFactSimilaritySearch,
     FactExpansion,
 )
-from question_answering.strategies.keywords import ExtractKeywords, KeywordSearch
-from question_answering.strategies.communities import GetCommunities
+from neptune_graph_rag.question_answering.strategies.keywords import (
+    ExtractKeywords,
+    KeywordSearch,
+)
+from neptune_graph_rag.question_answering.strategies.communities import GetCommunities
 
 vulnerability_list = None
 QUERY_TYPES = Enum("QUERY_TYPES", ["KnowledgeGraph", "RAG", "GraphRAG", "Unknown"])
@@ -218,4 +221,7 @@ def run_graphrag_answer_question(question):
         | Pipe(get_communities.accept)
     )
 
-    return QAResponse(os.environ["RESPONSE_MODEL"]).generate_response(results)
+    answers = str(
+        QAResponse(os.environ["RESPONSE_MODEL"]).generate_response(results)
+    ).split("Answer:")
+    return {"results": answers[1], "quotes": answers[0]}
