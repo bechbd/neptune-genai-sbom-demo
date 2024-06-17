@@ -36,7 +36,9 @@ def run_query(prompt):
         with st.spinner(f"Executing using natural language query translation ..."):
             with st.chat_message("assistant"):
                 response = run_natural_language_query(prompt)
-                create_display(response)
+                create_display(response["results"])
+                with st.popover("Query"):
+                    st.code(response["query"])
                 messages.append(
                     {"role": "assistant", "content": response, "type": "table"}
                 )
@@ -44,17 +46,19 @@ def run_query(prompt):
 
 # Page title
 st.set_page_config(
-    page_title="SBOM Graph RAG Demo",
+    page_title="Neptune Generative AI Demo",
     layout="wide",
 )
 
 st.title("Natural Language Query")
 st.write(
-    """Using Amazon Bedrock Foundation models, your natural language question will be converted into an openCypher query, which will then be run, and results returned."""
+    """Using Amazon Bedrock Foundation models, your natural language 
+    question will be converted into an openCypher query,
+    which will then be run, and results returned."""
 )
 
 tab1, tab2 = st.tabs(["Chat", " "])
-with st.container():
+with tab1:
     # Setup the chat input
     write_messages(messages)
 
@@ -74,5 +78,5 @@ with st.sidebar:
         ),
     )
 
-    if st.button("Run", key="kg_queries"):
+    if st.button("Try it out", key="kg_queries"):
         run_query(kg_option)

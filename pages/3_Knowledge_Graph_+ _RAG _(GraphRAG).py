@@ -4,9 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import streamlit as st
-from llm import (
-    run_graphrag_answer_question,
-)
+from llm import run_graphrag_answer_question
 from utils import write_messages, create_display
 
 # ------------------------------------------------------------------------
@@ -24,6 +22,7 @@ if "messages_grag" not in st.session_state.keys():
         }
     ]
 
+
 messages = st.session_state.messages_grag
 
 
@@ -34,11 +33,12 @@ def run_query(prompt):
         with st.chat_message("user"):
             st.write(prompt)
 
-        with st.spinner("Executing using Knowledge Graph augmented RAG..."):
+        with st.spinner("Executing using Knowledge Graph enhanced RAG..."):
             with st.chat_message("assistant"):
                 response = run_graphrag_answer_question(prompt)
-
                 create_display(response["results"])
+                with st.popover("Quotes"):
+                    st.code(response["quotes"])
                 messages.append(
                     {"role": "assistant", "content": response, "type": "table"}
                 )
@@ -50,14 +50,15 @@ def run_query(prompt):
 
 # Page title
 st.set_page_config(
-    page_title="SBOM Graph RAG Demo",
+    page_title="Neptune Generative AI Demo",
     layout="wide",
 )
 
-st.title("Knowledge Graph augmented RAG")
+st.title("Knowledge Graph Enhanced RAG")
 st.write(
     """Using Amazon Bedrock Foundation models, your natural language question will be answered using a combination of
-    Knowledge Graph queries and Vector similarity.  This data will then be sent to the LLM for summarization and results returned."""
+    Knowledge Graph queries and Vector similarity.  This data will then be sent to the LLM for summarization and 
+    results returned."""
 )
 
 # Setup columns for the two chatbots
@@ -82,5 +83,5 @@ with st.sidebar:
         ),
     )
 
-    if st.button("Try out GraphRAG", key="graphrag"):
+    if st.button("Try it out", key="graphrag"):
         run_query(kg_option)

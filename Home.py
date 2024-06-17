@@ -1,8 +1,10 @@
 import streamlit as st
+from llm import get_vulnerability_list
 
 st.set_page_config(
-    page_title="Hello",
+    page_title="Neptune Generative AI Demo",
     page_icon="👋",
+    layout="wide",
 )
 
 st.write("# Software Bill Of Materials Generative AI Demo using Amazon Neptune")
@@ -28,3 +30,4 @@ st.markdown(
 )
 st.subheader("SBOM Graph schema")
 st.image("schema.png", use_column_width=True)
+st.session_state.vulnerabiity_list = get_vulnerability_list()

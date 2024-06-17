@@ -5,10 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import streamlit as st
 import pandas as pd
-from llm import (
-    run_rag_query,
-    get_vulnerability_list,
-)
+from llm import run_templated_query, get_vulnerability_list, QUERY_TYPES
 from utils import write_messages, create_display
 
 # ------------------------------------------------------------------------
@@ -29,16 +26,16 @@ if "messages_byokg" not in st.session_state.keys():
 messages = st.session_state.messages_byokg
 
 
-def run_query(prompt):
+def run_query(prompt, type):
     st.session_state.messages_byokg.append({"role": "user", "content": prompt})
 
     with tab1:
         with st.chat_message("user"):
             st.write(prompt)
 
-        with st.spinner(f"Executing using tempalted graph queries ..."):
+        with st.spinner(f"Executing using templated graph queries ..."):
             with st.chat_message("assistant"):
-                response = run_rag_query(prompt)
+                response = run_templated_query(prompt, type)
                 create_display(response)
                 st.session_state.messages_byokg.append(
                     {"role": "assistant", "content": response, "type": "table"}
@@ -51,13 +48,14 @@ def run_query(prompt):
 
 # Page title
 st.set_page_config(
-    page_title="SBOM Graph RAG Demo",
+    page_title="Neptune Generative AI Demo",
     layout="wide",
 )
 
 st.title("Query an Existing Knowledge Graph")
 st.write(
-    """Using Amazon Bedrock Foundation models, your natural language question will have the key entites extracted , which will then be run using templated queries, and results returned."""
+    """Using Amazon Bedrock Foundation models, your natural language question will have the key entities extracted , 
+    which are then be run using templated queries, and results returned."""
 )
 
 # Setup columns for the two chatbots
@@ -75,11 +73,17 @@ if prompt := st.chat_input():
 with st.sidebar:
     st.header("Example Queries")
 
-    sim_option = st.selectbox("Select a Vulnerability:", get_vulnerability_list())
+    sim_option = st.selectbox(
+        "Select a Vulnerability:", st.session_state.vulnerabiity_list
+    )
 
     if st.button("Find the most similar", key="sim_queries"):
-        run_query(f"What Vulnerabilities are similar to '{sim_option}'?")
+        run_query(
+            f"What Vulnerabilities are similar to '{sim_option}'?",
+            QUERY_TYPES.Templated,
+        )
     if st.button("Show me how they are connected", key="whole_dataset"):
         run_query(
-            f"What Vulnerabilities are similar to '{sim_option}' and show me how they are connected"
+            f"What Vulnerabilities are similar to '{sim_option}' and show me how they are connected",
+            QUERY_TYPES.Explainability,
         )

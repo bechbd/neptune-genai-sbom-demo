@@ -35,9 +35,9 @@ from neptune_graph_rag.question_answering.strategies.keywords import (
 from neptune_graph_rag.question_answering.strategies.communities import GetCommunities
 
 vulnerability_list = None
-QUERY_TYPES = Enum("QUERY_TYPES", ["KnowledgeGraph", "RAG", "GraphRAG", "Unknown"])
+QUERY_TYPES = Enum("QUERY_TYPES", ["Templated", "Explainability", "Unknown"])
 
-VULNERABILITY_VSS_QUERY = """
+VULNERABILITY_TEMPLATED_QUERY = """
     MATCH (n:Vulnerability {id: $id})
     CALL neptune.algo.vectors.topKByNode(n)
     YIELD node, score
@@ -45,7 +45,7 @@ VULNERABILITY_VSS_QUERY = """
     ORDER BY score ASC
 """
 
-VULNERABILITY_GRAPH_RAG_QUERY_NODES = """
+VULNERABILITY_EXPLAINABILITY_QUERY_NODES = """
     MATCH (n:Vulnerability {id: $id})
     CALL neptune.algo.vectors.topKByNode(n)
     YIELD node, score
@@ -56,7 +56,7 @@ VULNERABILITY_GRAPH_RAG_QUERY_NODES = """
     RETURN collect(distinct n) as nodes
 """
 
-VULNERABILITY_GRAPH_RAG_QUERY_EDGES = """
+VULNERABILITY_EXPLAINABILITY_QUERY_EDGES = """
     MATCH (n:Vulnerability {id: $id})
     CALL neptune.algo.vectors.topKByNode(n)
     YIELD node, score
@@ -97,21 +97,21 @@ chat = ChatBedrock(
 )
 
 
-def determine_question_type(prompt) -> QUERY_TYPES:
-    template = f"""
-        You are an expert in determining if a question needs a document, a database query, or both.  Give the question below:
-        {prompt}
-        Is this best as a database query, a document query, or both?  Only answer database, document, both, or i don't know
-            """
-    response = chat.invoke(template)
-    if response.content.lower() == "database":
-        return QUERY_TYPES.KnowledgeGraph
-    elif response.content.lower() == "document":
-        return QUERY_TYPES.RAG
-    elif response.content.lower() == "both":
-        return QUERY_TYPES.GraphRAG
-    else:
-        return QUERY_TYPES.Unknown
+# def determine_question_type(prompt) -> QUERY_TYPES:
+#     template = f"""
+#         You are an expert in determining if a question needs a document, a database query, or both.  Give the question below:
+#         {prompt}
+#         Is this best as a database query, a document query, or both?  Only answer database, document, both, or i don't know
+#             """
+#     response = chat.invoke(template)
+#     if response.content.lower() == "database":
+#         return QUERY_TYPES.KnowledgeGraph
+#     elif response.content.lower() == "document":
+#         return QUERY_TYPES.RAG
+#     elif response.content.lower() == "both":
+#         return QUERY_TYPES.GraphRAG
+#     else:
+#         return QUERY_TYPES.Unknown
 
 
 def determine_query_information(prompt, query_type):
@@ -133,16 +133,18 @@ def determine_query_information(prompt, query_type):
 
         match label:
             case "Vulnerability":
-                if query_type == QUERY_TYPES.RAG:
-                    resp = run_graph_query(VULNERABILITY_VSS_QUERY, {"id": value_id})
-                elif query_type == QUERY_TYPES.GraphRAG:
+                if query_type == QUERY_TYPES.Templated:
+                    resp = run_graph_query(
+                        VULNERABILITY_TEMPLATED_QUERY, {"id": value_id}
+                    )
+                elif query_type == QUERY_TYPES.Explainability:
                     resp = {"subgraph": {}}
                     res = run_graph_query(
-                        VULNERABILITY_GRAPH_RAG_QUERY_NODES, {"id": value_id}
+                        VULNERABILITY_EXPLAINABILITY_QUERY_NODES, {"id": value_id}
                     )
                     resp["subgraph"]["nodes"] = res[0]["nodes"]
                     res = run_graph_query(
-                        VULNERABILITY_GRAPH_RAG_QUERY_EDGES, {"id": value_id}
+                        VULNERABILITY_EXPLAINABILITY_QUERY_EDGES, {"id": value_id}
                     )
                     resp["subgraph"]["edges"] = res[0]["edges"]
 
@@ -155,7 +157,7 @@ def determine_query_information(prompt, query_type):
 
 def run_natural_language_query(prompt):
     resp = chain.invoke(prompt)
-    return resp["result"]
+    return {"results": resp["result"], "query": resp["intermediate_steps"][0]["query"]}
 
 
 @st.cache_data
@@ -164,8 +166,8 @@ def get_vulnerability_list():
     return [d["id"] for d in data]
 
 
-def run_rag_query(query):
-    resp = determine_query_information(query, QUERY_TYPES.RAG)
+def run_templated_query(query, type):
+    resp = determine_query_information(query, type)
     return resp
 
 
