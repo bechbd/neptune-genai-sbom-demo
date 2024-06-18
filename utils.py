@@ -9,10 +9,10 @@ def write_messages(message_state):
             create_display(message["content"])
 
 
-def create_display(response):
+def create_display(response, key=None):
     if isinstance(response, dict) or isinstance(response, list):
         if isinstance(response, dict) and "subgraph" in response:
-            setup_graph(response["subgraph"])
+            setup_graph(response["subgraph"], key=key)
         else:
             st.dataframe(response, use_container_width=True)
 

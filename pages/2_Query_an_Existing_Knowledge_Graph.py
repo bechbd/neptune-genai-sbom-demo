@@ -36,7 +36,7 @@ def run_query(prompt, type):
         with st.spinner(f"Executing using templated graph queries ..."):
             with st.chat_message("assistant"):
                 response = run_templated_query(prompt, type)
-                create_display(response)
+                create_display(response, key=sim_option)
                 st.session_state.messages_byokg.append(
                     {"role": "assistant", "content": response, "type": "table"}
                 )
@@ -73,9 +73,7 @@ if prompt := st.chat_input():
 with st.sidebar:
     st.header("Example Queries")
 
-    sim_option = st.selectbox(
-        "Select a Vulnerability:", st.session_state.vulnerabiity_list
-    )
+    sim_option = st.selectbox("Select a Vulnerability:", get_vulnerability_list())
 
     if st.button("Find the most similar", key="sim_queries"):
         run_query(
