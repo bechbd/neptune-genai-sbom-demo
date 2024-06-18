@@ -47,6 +47,7 @@ def run_query(prompt):
 # Page title
 st.set_page_config(
     page_title="Neptune Generative AI Demo",
+    page_icon="🔱",
     layout="wide",
 )
 
@@ -57,10 +58,13 @@ st.write(
     which will then be run, and results returned."""
 )
 
-tab1, tab2 = st.tabs(["Chat", " "])
+tab1, tab2 = st.tabs(["Chat", "Architecture"])
 with tab1:
     # Setup the chat input
     write_messages(messages)
+
+with tab2:
+    st.image("NLQ.png", use_column_width=True)
 
 # React to user input
 if prompt := st.chat_input():

@@ -49,6 +49,7 @@ def run_query(prompt, type):
 # Page title
 st.set_page_config(
     page_title="Neptune Generative AI Demo",
+    page_icon="🔱",
     layout="wide",
 )
 
@@ -59,10 +60,13 @@ st.write(
 )
 
 # Setup columns for the two chatbots
-tab1, tab2 = st.tabs(["Chat", " "])
+tab1, tab2 = st.tabs(["Chat", "Architecture"])
 with tab1:
     # Setup the chat input
     write_messages(messages)
+
+with tab2:
+    st.image("Templated_Questions.png", use_column_width=True)
 
 
 # React to user input
