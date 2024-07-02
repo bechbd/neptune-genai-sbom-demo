@@ -1,3 +1,8 @@
+"""
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+"""
+
 import os
 from pathlib import Path
 from neptune_graph_rag.common.neptune_utils import node_id, node_result

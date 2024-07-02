@@ -1,3 +1,8 @@
+"""
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+"""
+
 import streamlit as st
 from graph import setup_graph
 

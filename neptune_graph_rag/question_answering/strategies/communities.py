@@ -1,3 +1,8 @@
+"""
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+SPDX-License-Identifier: Apache-2.0
+"""
+
 from neptune_graph_rag.common.neptune_utils import node_result
 from neptune_graph_rag.question_answering.strategies.base_strategy import BaseStrategy
 from neptune_graph_rag.question_answering.strategies.facts import FactSimilaritySearch

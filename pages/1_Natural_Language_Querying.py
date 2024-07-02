@@ -9,11 +9,7 @@ from llm import (
 )
 from utils import write_messages, create_display
 
-# ------------------------------------------------------------------------
-# Functions
-# This section contains the functions needed to be called by our streamlit app
-
-# # Store LLM generated responses
+# Store LLM generated responses
 if "messages_nlq" not in st.session_state.keys():
     st.session_state.messages_nlq = [
         {
@@ -44,7 +40,6 @@ def run_query(prompt):
                 )
 
 
-# Page title
 st.set_page_config(
     page_title="Neptune Generative AI Demo",
     page_icon="🔱",

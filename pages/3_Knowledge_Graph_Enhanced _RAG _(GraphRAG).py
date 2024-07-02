@@ -71,6 +71,8 @@ with tab1:
 with tab2:
     st.image("GraphRAG_Questions.png", use_column_width=True)
 
+    st.image("graph.png", use_column_width=True)
+
 # React to user input
 if prompt := st.chat_input():
     run_query(prompt)

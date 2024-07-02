@@ -97,23 +97,6 @@ chat = ChatBedrock(
 )
 
 
-# def determine_question_type(prompt) -> QUERY_TYPES:
-#     template = f"""
-#         You are an expert in determining if a question needs a document, a database query, or both.  Give the question below:
-#         {prompt}
-#         Is this best as a database query, a document query, or both?  Only answer database, document, both, or i don't know
-#             """
-#     response = chat.invoke(template)
-#     if response.content.lower() == "database":
-#         return QUERY_TYPES.KnowledgeGraph
-#     elif response.content.lower() == "document":
-#         return QUERY_TYPES.RAG
-#     elif response.content.lower() == "both":
-#         return QUERY_TYPES.GraphRAG
-#     else:
-#         return QUERY_TYPES.Unknown
-
-
 def determine_query_information(prompt, query_type):
     template = f"""
     You are an expert in Software Bill Of Materials.  Given the question below:
