@@ -89,6 +89,7 @@ six==1.16.0
 smmap==5.0.1
 sniffio==1.3.1
 SQLAlchemy==2.0.30
+st-cytoscape==0.0.5
 streamlit==1.35.0
 streamlit-agraph==0.0.45
 tenacity==8.3.0
